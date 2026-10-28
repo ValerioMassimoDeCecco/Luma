@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ebe9f4">
+  <meta name="description" content="Un piccolo spazio per controllare la tua luce Tapo.">
+  <title>Luma — la tua luce, a modo tuo</title>
+  <link rel="icon" href="static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/style.css">
+  <link rel="stylesheet" href="static/house.css">
+  <link rel="stylesheet" href="static/extension.css">
+  <script src="static/theme.js"></script>
+  <script src="static/app.js" defer></script>
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2.5c.7 4.8 2.7 6.8 7.5 7.5-4.8.7-6.8 2.7-7.5 7.5-.7-4.8-2.7-6.8-7.5-7.5C9.3 9.3 11.3 7.3 12 2.5Z"/><path d="M19 15.5c.3 1.9 1.1 2.7 3 3-1.9.3-2.7 1.1-3 3-.3-1.9-1.1-2.7-3-3 1.9-.3 2.7-1.1 3-3Z"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M9.5 21h5M8.2 15.7C7.7 14.2 5 12.7 5 9a7 7 0 1 1 14 0c0 3.7-2.7 5.2-3.2 6.7-.2.6-.6.8-1.2.8H9.4c-.6 0-1-.2-1.2-.8Z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .3 1.3 1 .8-1.4 2.5-1.3-.4-1.2.5-.4 1.3h-2.9l-.4-1.3-1.2-.5-1.3.4-1.4-2.5 1-.8.3-1.3-.9-1-1.3-.2v-2.9l1.3-.4.5-1.2-.4-1.3L11.8 6l.8 1 1.3.3 1-.9.2-1.3H18l.4 1.3 1.2.5 1.3-.4L22.3 9l-1 .8-.3 1.3.9 1 1.3.2v2.9l-1.3.4-.5 1.2" transform="translate(-2 -1)"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><path d="M9.8 3.7a1 1 0 0 1 1-.8h2.4a1 1 0 0 1 1 .8l.3 1.5c.5.2.9.3 1.3.6l1.3-.8a1 1 0 0 1 1.2.2L20 6.9a1 1 0 0 1 .2 1.2l-.8 1.3.6 1.3 1.5.3a1 1 0 0 1 .8 1v2.4a1 1 0 0 1-.8 1l-1.5.3-.6 1.3.8 1.3a1 1 0 0 1-.2 1.2l-1.7 1.7a1 1 0 0 1-1.2.2l-1.3-.8-1.3.6-.3 1.5a1 1 0 0 1-1 .8h-2.4a1 1 0 0 1-1-.8l-.3-1.5-1.3-.6-1.3.8a1 1 0 0 1-1.2-.2L4 19.5a1 1 0 0 1-.2-1.2l.8-1.3-.6-1.3-1.5-.3a1 1 0 0 1-.8-1V12a1 1 0 0 1 .8-1l1.5-.3.6-1.3-.8-1.3A1 1 0 0 1 4 6.9l1.7-1.7a1 1 0 0 1 1.2-.2l1.3.8 1.3-.6.3-1.5Z"/><circle cx="12" cy="13.2" r="3"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.4 9a7 7 0 0 1 11.3-2.5L20 12M4 12l3.3 5.5A7 7 0 0 0 18.6 15"/></symbol>
+    <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 2.8v9.3M6.1 6.7a8.3 8.3 0 1 0 11.8 0"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.6"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 15.2A8.5 8.5 0 0 1 8.8 4.5a8.6 8.6 0 1 0 10.7 10.7Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h15M14 6.5l5.5 5.5-5.5 5.5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 4.5 4.5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5.5" y="10" width="13" height="10" rx="2"/><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3M12 14v2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.2 4.2L19 6.5"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M5 4v7m0 4v5M12 4v3m0 4v9M19 4v9m0 4v3"/><circle cx="5" cy="13" r="2"/><circle cx="12" cy="9" r="2"/><circle cx="19" cy="15" r="2"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3 9a14 14 0 0 1 18 0M6.5 12.5a8.5 8.5 0 0 1 11 0M10 16a3.1 3.1 0 0 1 4 0M12 19h.01"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-8 8M10 6H5v13h13v-5"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3.5 10 8.5-7 8.5 7v9a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19z"/><path d="M9.5 20.5v-6h5v6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m4.5 19.5 3.8-.8L19 8a2.1 2.1 0 0 0-3-3L5.3 15.7zM14.5 6.5l3 3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7m3.5 0-.8 12a1.5 1.5 0 0 1-1.5 1.5H7.8A1.5 1.5 0 0 1 6.3 19L5.5 7M10 11v6m4-6v6"/></symbol>
+  </svg>
+
+  <div class="background background-one" aria-hidden="true"></div>
+  <div class="background background-two" aria-hidden="true"></div>
+  <div class="background background-three" aria-hidden="true"></div>
+
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Luma, pagina principale">
+        <span class="brand-mark"><svg class="icon icon-spark"><use href="#i-spark"></use></svg></span>
+        <span class="brand-copy"><strong>luma<span class="brand-point">.</span></strong><small>PER TAPO</small></span>
+      </a>
+      <div class="header-right">
+        <div class="connection-pill" id="connectionStatus" role="status" aria-live="polite"><span class="status-dot"></span><span id="connectionText">Connessione…</span></div>
+        <button class="theme-switch" id="themeToggle" type="button" aria-pressed="false" aria-label="Passa al tema scuro" title="Passa al tema scuro"><svg class="icon" aria-hidden="true"><use id="themeIcon" href="#i-moon"></use></svg><span id="themeLabel">Tema scuro</span></button>
+        <button class="icon-button refresh-button" id="refreshBtn" type="button" aria-label="Aggiorna lo stato della lampadina" title="Aggiorna stato" disabled><svg class="icon"><use href="#i-refresh"></use></svg></button>
+        <button class="icon-button fullscreen-button" id="openFullBtn" type="button" hidden aria-label="Apri il pannello completo" title="Apri il pannello completo"><svg class="icon"><use href="#i-expand"></use></svg></button>
+        <button class="icon-button settings-button" id="settingsBtn" type="button" aria-label="Apri impostazioni di connessione" title="Impostazioni"><svg class="icon"><use href="#i-gear"></use></svg></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="introduction" aria-labelledby="pageTitle">
+        <div>
+          <div class="eyebrow intro-eyebrow"><span class="eyebrow-line"></span> IL TUO SPAZIO DI LUCE <span class="tiny-star">✳</span></div>
+          <h1 id="pageTitle">La luce, <em>a modo tuo.</em></h1>
+          <p>Piccoli gesti, grandi atmosfere. Benvenuto a casa.</p>
+        </div>
+        <div class="intro-side" aria-hidden="true"><span class="intro-side-spark">✳</span><span>UN PO' DI LUCE<br>FA LA DIFFERENZA.</span></div>
+      </section>
+
+      <div class="extension-strip" aria-label="Modalità estensione">
+        <div class="extension-strip-copy"><span class="extension-dot"></span><span id="modeDescription">ESTENSIONE · SOLO RETE LOCALE</span></div>
+        <button type="button" id="demoToggle" class="extension-mode">Prova la demo</button>
+      </div>
+
+      <section class="home-bar glass" aria-label="Stanze e lampadine">
+        <div class="home-top">
+          <div class="home-identity"><span class="home-icon"><svg class="icon" aria-hidden="true"><use href="#i-home"></use></svg></span><span><small>LA TUA CASA</small><strong>Le tue stanze</strong></span></div>
+          <div class="room-list" id="roomList" aria-label="Seleziona una stanza"></div>
+          <button class="home-icon-button" id="editRoomBtn" type="button" aria-label="Gestisci stanza selezionata" title="Gestisci stanza"><svg class="icon"><use href="#i-edit"></use></svg></button>
+          <button class="home-add-room" id="addRoomBtn" type="button"><svg class="icon"><use href="#i-plus"></use></svg><span>Nuova stanza</span></button>
+        </div>
+        <div class="home-lights">
+          <span class="lights-label">LE TUE LUCI</span>
+          <div class="device-list" id="deviceList" aria-label="Seleziona una lampadina"></div>
+          <button class="home-icon-button device-edit" id="editDeviceBtn" type="button" aria-label="Gestisci lampadina selezionata" title="Gestisci lampadina"><svg class="icon"><use href="#i-edit"></use></svg></button>
+          <button class="home-add-light" id="addDeviceBtn" type="button" aria-label="Aggiungi lampadina"><svg class="icon"><use href="#i-plus"></use></svg><span>Aggiungi lampadina</span></button>
+        </div>
+      </section>
+
+      <div class="dashboard">
+        <section class="device-card glass" id="deviceCard" aria-labelledby="deviceName">
+          <div class="device-card-glow" aria-hidden="true"></div>
+          <div class="card-top">
+            <div class="device-identity">
+              <span class="device-icon"><svg class="icon"><use href="#i-bulb"></use></svg></span>
+              <div><p class="micro-label">LA TUA LAMPADINA</p><h2 id="deviceName">Lampadina Tapo</h2><p class="device-model" id="deviceModel">In attesa di connessione</p></div>
+            </div>
+            <span class="device-state-pill" id="deviceState"><span></span> Non connessa</span>
+          </div>
+          <div class="lamp-stage" aria-hidden="true">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+            <div class="stage-spark spark-one">✳</div><div class="stage-spark spark-two">✦</div><div class="stage-spark spark-three">✧</div>
+            <svg class="lamp-art" viewBox="0 0 280 360" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="bulbFill" cx="42%" cy="30%" r="75%"><stop offset="0" stop-color="#fffef9"/><stop offset=".40" stop-color="#fff9e9"/><stop offset=".8" stop-color="#f5e6d6"/><stop offset="1" stop-color="#d3cbd4"/></radialGradient>
+                <radialGradient id="bulbTint" cx="50%" cy="55%" r="65%"><stop offset="0" stop-color="rgb(var(--light-rgb))" stop-opacity=".7"/><stop offset=".58" stop-color="rgb(var(--light-rgb))" stop-opacity=".28"/><stop offset="1" stop-color="rgb(var(--light-rgb))" stop-opacity=".02"/></radialGradient>
+                <linearGradient id="bulbEdge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#fff" stop-opacity=".12"/><stop offset=".72" stop-color="#9e98a6" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity=".8"/></linearGradient>
+                <linearGradient id="bulbNeck" x1="0" x2="1"><stop stop-color="#b8acb4"/><stop offset=".22" stop-color="#f9eee9"/><stop offset=".55" stop-color="#fffdf6"/><stop offset=".85" stop-color="#cbbfc2"/><stop offset="1" stop-color="#aa9ca9"/></linearGradient>
+                <linearGradient id="metal" x1="0" x2="1"><stop stop-color="#a69ba6"/><stop offset=".2" stop-color="#e3dce0"/><stop offset=".49" stop-color="#fffaf6"/><stop offset=".75" stop-color="#ccc4c9"/><stop offset="1" stop-color="#918791"/></linearGradient>
+                <filter id="artShadow" x="-50%" y="-40%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
+              </defs>
+              <ellipse cx="140" cy="308" rx="69" ry="11" fill="#80738c" opacity=".18" filter="url(#artShadow)"/>
+              <path d="M140 29c-61 0-102 44-102 101 0 40 21 62 39 83 9 11 14 23 16 38h94c2-15 7-27 16-38 18-21 39-43 39-83 0-57-41-101-102-101Z" fill="#b9a6a2" opacity=".15" transform="translate(3 9)" filter="url(#artShadow)"/>
+              <path d="M140 29c-61 0-102 44-102 101 0 40 21 62 39 83 9 11 14 23 16 38h94c2-15 7-27 16-38 18-21 39-43 39-83 0-57-41-101-102-101Z" fill="url(#bulbFill)" stroke="url(#bulbEdge)" stroke-width="2"/>
+              <path class="bulb-color" d="M140 29c-61 0-102 44-102 101 0 40 21 62 39 83 9 11 14 23 16 38h94c2-15 7-27 16-38 18-21 39-43 39-83 0-57-41-101-102-101Z" fill="url(#bulbTint)"/>
+              <path d="M76 91c8-21 22-35 42-41" fill="none" stroke="#fff" stroke-opacity=".74" stroke-width="7" stroke-linecap="round"/>
+              <path d="M67 108c-3 10-4 20-3 30" fill="none" stroke="#fff" stroke-opacity=".44" stroke-width="4" stroke-linecap="round"/>
+              <path d="M214 112c7 33-6 62-23 81" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/>
+              <g class="filament" fill="none" stroke="#d99e64" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M118 236c-3-23-7-46-12-61m56 61c3-23 7-46 12-61" stroke-opacity=".27" stroke-width="2"/>
+                <path d="M106 175c7 3 9 3 12-3 3-5 6-5 9 0 3 5 6 5 9 0 3-5 6-5 9 0 3 5 6 5 9 0 3-5 6-5 9 0 3 6 5 6 11 3" stroke-opacity=".55" stroke-width="2.4"/>
+              </g>
+              <path d="M93 248h94v24c0 6-5 10-11 10h-72c-6 0-11-4-11-10z" fill="url(#bulbNeck)"/>
+              <path d="M96 267h88v15c0 4-3 7-7 7h-74c-4 0-7-3-7-7z" fill="url(#metal)"/>
+              <path d="M99 283h82v31c0 7-5 12-12 12h-58c-7 0-12-5-12-12z" fill="url(#metal)"/>
+              <path d="M99 291c24 3 58 3 82 0M99 300c24 3 58 3 82 0M100 309c24 3 56 3 80 0M104 318c21 3 51 3 72 0" fill="none" stroke="#877d89" stroke-opacity=".48" stroke-width="2"/>
+              <path d="M116 326h48c-2 9-9 15-18 15h-12c-9 0-16-6-18-15Z" fill="#9c929d"/>
+              <path d="M108 279h63" stroke="#fff" stroke-opacity=".65" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="device-bottom">
+            <div class="device-readout">
+              <p class="micro-label">LUMINOSITÀ</p>
+              <div class="big-reading"><span id="bigBrightness">—</span><span class="percent" id="bigPercent">%</span></div>
+              <p class="device-caption"><span class="caption-dot"></span><span id="deviceCaption">Collega la tua lampadina</span></p>
+            </div>
+            <div class="power-block">
+              <button class="power-button" id="powerBtn" type="button" aria-pressed="false" aria-label="Collega la lampadina"><svg class="icon"><use href="#i-power"></use></svg></button>
+              <span id="powerText">Collega</span>
+            </div>
+          </div>
+          <span class="hero-watermark" aria-hidden="true">LUCE / 01</span>
+        </section>
+
+        <section class="controls-card glass" aria-labelledby="controlsTitle">
+          <div class="controls-heading">
+            <div><p class="micro-label">IL TUO PANNELLO</p><h2 id="controlsTitle">Trova la tua luce<span class="title-dot">.</span></h2><p>Ogni sfumatura, sotto controllo.</p></div>
+            <span class="controls-icon" aria-hidden="true"><svg class="icon"><use href="#i-sliders"></use></svg></span>
+          </div>
+          <div class="panel-content" id="panelContent">
+            <div class="control-block brightness-block">
+              <div class="control-label"><label for="brightnessRange">Luminosità</label><output id="brightnessValue" for="brightnessRange">72<span>%</span></output></div>
+              <div class="range-row"><svg class="icon sun-small" aria-hidden="true"><use href="#i-sun"></use></svg><input class="range range-brightness" type="range" id="brightnessRange" min="1" max="100" value="72" disabled><svg class="icon sun-large" aria-hidden="true"><use href="#i-sun"></use></svg></div>
+              <div class="range-caption"><span>Soffusa</span><span>Intensa</span></div>
+            </div>
+            <div class="control-divider"></div>
+            <div class="mode-heading"><span>Colore della luce</span><small>PERSONALIZZA</small></div>
+            <div class="mode-switch" id="modeSwitch" role="group" aria-label="Tipo di luce">
+              <button type="button" id="whiteTab" aria-pressed="true" disabled><svg class="icon"><use href="#i-sun"></use></svg> Bianco</button>
+              <button type="button" id="colorTab" aria-pressed="false" disabled><span class="rainbow-dot"></span> Colore</button>
+            </div>
+            <div id="whitePane" class="mode-pane">
+              <div class="control-label"><label for="temperatureRange">Temperatura</label><output id="temperatureValue" for="temperatureRange">3200 <span>K</span></output></div>
+              <div class="range-row color-range-row"><input class="range range-temperature" type="range" id="temperatureRange" min="2500" max="6500" step="50" value="3200" disabled></div>
+              <div class="range-caption"><span>Calda</span><span>Fredda</span></div>
+              <div class="quick-whites" aria-label="Tonalità bianche rapide">
+                <button class="white-preset" type="button" data-temp="2700" disabled><span class="white-dot warm-dot"></span> Calda</button>
+                <button class="white-preset" type="button" data-temp="4000" disabled><span class="white-dot neutral-dot"></span> Naturale</button>
+                <button class="white-preset" type="button" data-temp="6000" disabled><span class="white-dot cool-dot"></span> Fredda</button>
+              </div>
+            </div>
+            <div id="colorPane" class="mode-pane" hidden>
+              <div class="control-label"><label for="hueRange">Tonalità</label><output id="hueValue" for="hueRange">30<span>°</span></output></div>
+              <div class="range-row color-range-row"><input class="range range-hue" type="range" id="hueRange" min="0" max="360" value="30" disabled></div>
+              <div class="control-label saturation-label"><label for="saturationRange">Saturazione</label><output id="saturationValue" for="saturationRange">85<span>%</span></output></div>
+              <div class="range-row color-range-row"><input class="range range-saturation" type="range" id="saturationRange" min="1" max="100" value="85" disabled></div>
+              <div class="quick-colors" aria-label="Colori rapidi">
+                <button type="button" class="color-swatch" data-hue="0" data-sat="100" style="--swatch:#f77f84" aria-label="Rosso" disabled></button>
+                <button type="button" class="color-swatch" data-hue="30" data-sat="100" style="--swatch:#f6ad66" aria-label="Arancione" disabled></button>
+                <button type="button" class="color-swatch" data-hue="55" data-sat="100" style="--swatch:#f2d569" aria-label="Giallo" disabled></button>
+                <button type="button" class="color-swatch" data-hue="145" data-sat="100" style="--swatch:#85cdaa" aria-label="Verde" disabled></button>
+                <button type="button" class="color-swatch" data-hue="220" data-sat="100" style="--swatch:#88b7ed" aria-label="Blu" disabled></button>
+                <button type="button" class="color-swatch" data-hue="280" data-sat="100" style="--swatch:#bc9adf" aria-label="Viola" disabled></button>
+                <label class="custom-color" title="Colore personalizzato"><span aria-hidden="true">+</span><input type="color" id="customColor" value="#ff8000" aria-label="Scegli un colore personalizzato" disabled></label>
+              </div>
+            </div>
+            <div id="noColorSupport" class="unsupported" hidden>Questo modello permette di regolare la luminosità.</div>
+          </div>
+          <div class="panel-foot"><span class="panel-foot-icon">✦</span><span id="panelHint">Regola la luce come preferisci.</span><span class="panel-foot-line"></span></div>
+        </section>
+      </div>
+
+      <section class="scenes-section" aria-labelledby="scenesTitle">
+        <div class="section-heading"><div><p class="micro-label">UN TOCCO, UN'ATMOSFERA</p><h2 id="scenesTitle">La luce giusta per ogni momento<span class="title-dot">.</span></h2></div><p>Lasciati ispirare <span aria-hidden="true">↘</span></p></div>
+        <div class="scenes-grid">
+          <button class="scene scene-relax" type="button" data-scene="relax" aria-pressed="false" disabled><span class="scene-orb"><svg class="icon"><use href="#i-moon"></use></svg></span><span class="scene-copy"><strong>Relax</strong><small>Calma e luce soffusa</small></span><span class="scene-arrow"><svg class="icon"><use href="#i-arrow"></use></svg></span></button>
+          <button class="scene scene-focus" type="button" data-scene="focus" aria-pressed="false" disabled><span class="scene-orb"><svg class="icon"><use href="#i-sun"></use></svg></span><span class="scene-copy"><strong>Concentrazione</strong><small>Chiara e luminosa</small></span><span class="scene-arrow"><svg class="icon"><use href="#i-arrow"></use></svg></span></button>
+          <button class="scene scene-sunset" type="button" data-scene="sunset" aria-pressed="false" disabled><span class="scene-orb"><svg class="icon"><use href="#i-spark"></use></svg></span><span class="scene-copy"><strong>Tramonto</strong><small>Calore da fine giornata</small></span><span class="scene-arrow"><svg class="icon"><use href="#i-arrow"></use></svg></span></button>
+          <button class="scene scene-dream" type="button" data-scene="dream" aria-pressed="false" disabled><span class="scene-orb"><svg class="icon"><use href="#i-spark"></use></svg></span><span class="scene-copy"><strong>Sogno</strong><small>Un tocco di magia</small></span><span class="scene-arrow"><svg class="icon"><use href="#i-arrow"></use></svg></span></button>
+        </div>
+      </section>
+    </main>
+    <div class="backup-strip" aria-label="Backup configurazione"><span>LA TUA CASA, AL SICURO</span><div><button type="button" id="importBtn">Importa casa 2.1</button><button type="button" id="exportBtn">Esporta backup</button></div><input id="importFile" type="file" accept=".json,application/json" hidden></div>
+    <footer class="footer"><span>FATTO PER FAR BRILLARE OGNI MOMENTO <span>✳</span></span><span>LUMA PER TAPO <i>·</i> ESTENSIONE CHROME 2.1</span></footer>
+  </div>
+
+  <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="dialogTitle" aria-describedby="dialogDescription">
+    <div class="dialog-inner">
+      <div class="dialog-top"><span class="dialog-icon"><svg class="icon"><use href="#i-bulb"></use></svg></span><button class="dialog-close" id="closeDialog" type="button" aria-label="Chiudi impostazioni"><svg class="icon"><use href="#i-close"></use></svg></button></div>
+      <p class="micro-label dialog-eyebrow" id="deviceDialogEyebrow">UNA LUCE IN PIÙ</p>
+      <h2 id="dialogTitle">Aggiungi una lampadina<span class="title-dot">.</span></h2>
+      <p class="dialog-description" id="dialogDescription">Dai un nome alla tua luce e scegli la stanza in cui si trova.</p>
+      <div id="demoNotice" class="demo-notice demo-inline" hidden><strong>Modalità demo</strong> · Le luci che aggiungi sono simulate e non inviano comandi reali.</div>
+      <form id="connectionForm" novalidate>
+        <div class="legacy-warning" id="legacyWarning" hidden>Il vecchio <strong>config.json</strong> potrebbe contenere la password in chiaro. Non viene importata: controlla ed elimina manualmente quella vecchia copia.</div>
+        <div class="form-row device-form-row"><div class="form-field"><label for="deviceNameInput">Nome della lampadina</label><input id="deviceNameInput" name="device_name" type="text" maxlength="60" placeholder="Es. Lampada divano" required></div><div class="form-field"><label for="deviceRoomSelect">Stanza</label><select id="deviceRoomSelect" name="room_id"></select></div></div>
+        <div id="realFields">
+          <div class="compatibility-hint"><strong>Compatibilità Tapo</strong><span>Per molti firmware, attiva «Compatibilità con terze parti» nell’app Tapo, in Io → Servizi di terze parti. Può ridurre la sicurezza e non garantisce il collegamento.</span></div>
+          <div class="form-field"><label for="emailInput">Email dell'account Tapo</label><input id="emailInput" name="email" type="email" autocomplete="username" placeholder="nome@esempio.it"></div>
+          <div class="form-field"><label for="passwordInput">Password</label><div class="password-wrap"><input id="passwordInput" name="password" type="password" autocomplete="current-password" placeholder="La tua password Tapo"><button class="reveal-button" id="revealBtn" type="button" aria-controls="passwordInput" aria-pressed="false">Mostra</button></div><small class="credential-hint" id="credentialHint">La password può essere riutilizzata per le altre luci dello stesso account durante questa sessione.</small></div>
+          <div class="form-row"><div class="form-field"><label for="ipInput">Indirizzo IP</label><input id="ipInput" name="ip" type="text" inputmode="decimal" autocomplete="off" placeholder="192.168.1.20"></div><div class="form-field"><label for="modelSelect">Modello</label><select id="modelSelect" name="model"><option value="l530">L530</option><option value="l535">L535</option><option value="l510">L510</option><option value="l520">L520</option><option value="l610">L610</option><option value="l630">L630</option><option value="l900">L900</option><option value="l920">L920</option><option value="l930">L930</option></select></div></div>
+          <label class="remember-row"><input type="checkbox" id="rememberInput"><span><strong>Conserva la password cifrata</strong><small>Per questo account, protetta da una frase segreta che non viene memorizzata.</small></span></label>
+          <div class="form-field vault-field" id="vaultField" hidden><label for="vaultPassword">Frase segreta dell’archivio</label><input id="vaultPassword" type="password" autocomplete="off" maxlength="256" placeholder="Almeno 12 caratteri"><small class="credential-hint">Sarà necessaria per sbloccare l’archivio in una nuova sessione.</small></div>
+          <div class="discovery-results" id="discoveryResults" hidden aria-live="polite"></div>
+        </div>
+        <p class="form-error" id="formError" role="alert" hidden></p>
+        <div class="dialog-actions"><button class="secondary-button" id="discoverBtn" type="button"><svg class="icon"><use href="#i-search"></use></svg><span>Come trovo l’IP?</span></button><button class="primary-button" id="connectBtn" type="submit"><span>Aggiungi e collega</span><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        <p class="security-note" id="securityNote"><svg class="icon"><use href="#i-lock"></use></svg> La password resta in memoria durante la sessione, salvo l’archivio cifrato opzionale.</p>
+        <button class="delete-link" id="deleteDeviceBtn" type="button" hidden><svg class="icon"><use href="#i-trash"></use></svg> Rimuovi lampadina</button>
+        <div class="delete-confirm" id="deviceDeleteConfirm" hidden><p>Rimuovere questa lampadina da Luma? Non verrà spenta. Se è l'ultima di questo account, sarà rimosso anche l'eventuale archivio cifrato.</p><div><button class="secondary-button" id="cancelDeleteDevice" type="button">Annulla</button><button class="danger-button" id="confirmDeleteDevice" type="button">Sì, rimuovi</button></div></div>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog class="settings-dialog room-dialog" id="roomDialog" aria-labelledby="roomDialogTitle" aria-describedby="roomDialogDescription">
+    <div class="dialog-inner">
+      <div class="dialog-top"><span class="dialog-icon"><svg class="icon"><use href="#i-home"></use></svg></span><button class="dialog-close" id="closeRoomDialog" type="button" aria-label="Chiudi"><svg class="icon"><use href="#i-close"></use></svg></button></div>
+      <p class="micro-label dialog-eyebrow">LA TUA CASA</p>
+      <h2 id="roomDialogTitle">Nuova stanza<span class="title-dot">.</span></h2>
+      <p class="dialog-description" id="roomDialogDescription">Organizza le tue luci nel modo che preferisci.</p>
+      <form id="roomForm" novalidate>
+        <div class="form-field"><label for="roomNameInput">Nome della stanza</label><input id="roomNameInput" type="text" maxlength="50" placeholder="Es. Studio" required></div>
+        <p class="form-error" id="roomFormError" role="alert" hidden></p>
+        <div class="dialog-actions"><button class="primary-button" id="saveRoomBtn" type="submit"><span>Crea stanza</span><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        <button class="delete-link" id="deleteRoomBtn" type="button" hidden><svg class="icon"><use href="#i-trash"></use></svg> Elimina stanza</button>
+        <p class="room-delete-hint" id="roomDeleteHint" hidden></p>
+        <div class="delete-confirm" id="roomDeleteConfirm" hidden><p>Eliminare questa stanza? L'operazione non si può annullare.</p><div><button class="secondary-button" id="cancelDeleteRoom" type="button">Annulla</button><button class="danger-button" id="confirmDeleteRoom" type="button">Sì, elimina</button></div></div>
+      </form>
+    </div>
+  </dialog>
+  <dialog class="settings-dialog room-dialog" id="importDialog" aria-labelledby="importTitle" aria-describedby="importDescription">
+    <div class="dialog-inner"><div class="dialog-top"><span class="dialog-icon"><svg class="icon"><use href="#i-home"></use></svg></span><button class="dialog-close" id="cancelImport" type="button" aria-label="Chiudi"><svg class="icon"><use href="#i-close"></use></svg></button></div>
+    <p class="micro-label dialog-eyebrow">IMPORTA LA TUA CASA</p><h2 id="importTitle">Sostituire la configurazione<span class="title-dot">?</span></h2>
+    <p class="dialog-description" id="importDescription">Le stanze e le lampadine attuali dell’estensione saranno sostituite. Le password non verranno importate: dovrai inserirle di nuovo.</p>
+    <p class="form-error" id="importError" role="alert" hidden></p><div class="dialog-actions"><button class="secondary-button" id="cancelImportAction" type="button">Annulla</button><button class="primary-button" id="confirmImport" type="button">Importa casa</button></div></div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
