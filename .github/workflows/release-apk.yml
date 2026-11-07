@@ -32,13 +32,36 @@ jobs:
           distribution: "temurin"
           java-version: "21"
 
-      - name: Configura Android SDK (API 36)
-        uses: android-actions/setup-android@v3
-
-      - name: Accetta licenze Android SDK e installa Build-Tools 36
+      - name: Configura Android SDK e installa API 36 / Build-Tools 36.0.0
         run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          mkdir -p "$SDK_ROOT"
+
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+
+          SDKMANAGER_BIN="$(find "$SDK_ROOT/cmdline-tools" -name sdkmanager -type f 2>/dev/null | sort -V | tail -n 1 || true)"
+
+          if [ -z "$SDKMANAGER_BIN" ]; then
+            CMDLINE_ZIP="/tmp/commandlinetools.zip"
+            curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o "$CMDLINE_ZIP"
+            mkdir -p "$SDK_ROOT/cmdline-tools"
+            unzip -q -o "$CMDLINE_ZIP" -d "$SDK_ROOT/cmdline-tools"
+            mv "$SDK_ROOT/cmdline-tools/cmdline-tools" "$SDK_ROOT/cmdline-tools/latest"
+            rm -f "$CMDLINE_ZIP"
+            SDKMANAGER_BIN="$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
+
+          CMDLINE_BIN_DIR="$(dirname "$SDKMANAGER_BIN")"
+          echo "$CMDLINE_BIN_DIR" >> "$GITHUB_PATH"
+          echo "$SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
+
+          yes | "$SDKMANAGER_BIN" --sdk_root="$SDK_ROOT" --licenses > /dev/null || true
+          "$SDKMANAGER_BIN" --sdk_root="$SDK_ROOT" \
+            "cmdline-tools;latest" \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0"
 
       - name: Configura Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
