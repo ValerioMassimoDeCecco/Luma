@@ -19,3 +19,13 @@
 - **Modelli supportati**: `L510`, `L520`, `L530`, `L535`, `L610`, `L630`, `L900`, `L920`, `L930`.
 - **Backup JSON**:
   - Importazione ed esportazione della configurazione della casa in formato JSON (`schema: 1`, compatibile con Luma 2.1).
+
+## Compilazione automatica APK e Release su GitHub (`v1.01`)
+
+Il progetto include il workflow GitHub Actions **`.github/workflows/release-apk.yml`**:
+1. Appena esegui il **Push to GitHub** (sul branch `main` / `master`, su un tag `v*` o manualmente dalla scheda *Actions*), GitHub Actions avvia automaticamente la compilazione con **JDK 21**, **Android SDK 36** e **Gradle 9.3.1**.
+2. Vengono generati e firmati gli APK installabili:
+   - `Luma-per-Tapo-v1.01-release.apk`
+   - `Luma-per-Tapo-v1.01-debug.apk`
+3. Il workflow pubblica automaticamente la **Release `v1.01`** nella sezione **Releases** del tuo repository GitHub allegando entrambi i file `.apk` pronti da scaricare e installare sullo smartphone, insieme alle note di rilascio di `CHANGELOG.md`.
+
