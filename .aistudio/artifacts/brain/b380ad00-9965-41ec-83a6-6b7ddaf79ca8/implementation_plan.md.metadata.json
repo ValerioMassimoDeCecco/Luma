@@ -1,0 +1,6 @@
+{
+  "summary":  "Piano di implementazione per il salvataggio automatico locale delle credenziali Tapo (cifrate tramite Android Keystore AES-256-GCM senza frasi segrete) e la persistenza delle sessioni attive KLAP/TPAP e dell'ultimo stato della lampadina all'uscita e riapertura dell'app.",
+  "updatedAt":  "2026-10-29T16:51:44.142339884Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}

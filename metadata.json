@@ -1,0 +1,6 @@
+{
+  "name": "Luma per Tapo",
+  "description": "Un piccolo spazio per scoprire e controllare le tue lampadine smart Tapo sulla rete locale.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
