@@ -21,6 +21,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".widget.LumaBulbWidgetProvider"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="it.luma.tapo.widget.ACTION_TOGGLE_POWER" />
+                <action android:name="it.luma.tapo.widget.ACTION_BRI_DOWN" />
+                <action android:name="it.luma.tapo.widget.ACTION_BRI_UP" />
+                <action android:name="it.luma.tapo.widget.ACTION_SCENE_RELAX" />
+                <action android:name="it.luma.tapo.widget.ACTION_SCENE_FOCUS" />
+                <action android:name="it.luma.tapo.widget.ACTION_SCENE_SUNSET" />
+                <action android:name="it.luma.tapo.widget.ACTION_SCENE_DREAM" />
+                <action android:name="it.luma.tapo.widget.ACTION_NEXT_DEVICE" />
+                <action android:name="it.luma.tapo.widget.ACTION_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/luma_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

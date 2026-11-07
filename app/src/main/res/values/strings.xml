@@ -69,6 +69,8 @@
     <string name="backup_label">LA TUA CASA, AL SICURO</string>
     <string name="btn_import_house">Importa casa 2.1</string>
     <string name="btn_export_backup">Esporta backup</string>
+    <string name="btn_pin_widget">Aggiungi widget Home</string>
+    <string name="widget_description">Controlla accensione, luminosità e atmosfere della tua lampadina Tapo direttamente dalla schermata Home.</string>
     <string name="footer_left">FATTO PER FAR BRILLARE OGNI MOMENTO</string>
-    <string name="footer_right">LUMA PER TAPO · ANDROID 2.1</string>
+    <string name="footer_right">LUMA PER TAPO · v1.01 · 120HZ</string>
 </resources>

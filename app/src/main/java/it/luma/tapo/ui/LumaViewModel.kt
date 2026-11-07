@@ -19,6 +19,7 @@ import it.luma.tapo.model.PublicHouse
 import it.luma.tapo.model.Room
 import it.luma.tapo.model.ScenePreset
 import it.luma.tapo.protocol.TapoDiscoveryEngine
+import it.luma.tapo.widget.LumaBulbWidgetProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -179,6 +180,16 @@ class LumaViewModel(application: Application) : AndroidViewModel(application) {
         val nextDark = !_uiState.value.isDark
         service.setDarkTheme(nextDark)
         _uiState.update { it.copy(isDark = nextDark) }
+        LumaBulbWidgetProvider.updateAllWidgets(appContext)
+    }
+
+    fun requestAddHomeWidget() {
+        val requested = LumaBulbWidgetProvider.requestPinWidget(appContext)
+        if (requested) {
+            showToast("Conferma nella finestra di sistema per aggiungere il widget Luma alla Home.")
+        } else {
+            showToast("Tieni premuto sulla schermata Home → Widget → Luma per Tapo per aggiungerlo.")
+        }
     }
 
     private fun bootstrap() {
@@ -203,6 +214,7 @@ class LumaViewModel(application: Application) : AndroidViewModel(application) {
                     selectDevice(initialDeviceId)
                 } else {
                     setIdleConnectionStatus()
+                    LumaBulbWidgetProvider.updateAllWidgets(appContext)
                 }
             } catch (e: Exception) {
                 _uiState.update {
@@ -213,6 +225,28 @@ class LumaViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 showToast(e.message ?: "Errore durante il caricamento della casa.", isError = true)
             }
+        }
+    }
+
+    fun onAppResumed() {
+        viewModelScope.launch {
+            val savedId = service.getSavedDeviceId()
+            if (savedId.isNotEmpty()) {
+                val cached = runCatching { service.getCachedSnapshot(savedId) }.getOrNull()
+                if (cached != null && cached.connected) {
+                    val dev = _uiState.value.house.devices.find { it.id == savedId }
+                    if (dev != null) {
+                        _uiState.update {
+                            it.copy(
+                                selectedRoomId = dev.roomId,
+                                selectedDeviceId = savedId
+                            )
+                        }
+                        applySnapshot(cached, followMode = false)
+                    }
+                }
+            }
+            refreshState(forceToast = false)
         }
     }
 
@@ -307,6 +341,7 @@ class LumaViewModel(application: Application) : AndroidViewModel(application) {
             )
         }
         setHealthyConnectionStatus()
+        LumaBulbWidgetProvider.updateAllWidgets(appContext)
     }
 
     fun selectRoom(roomId: String) {

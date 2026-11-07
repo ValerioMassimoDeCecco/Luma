@@ -1020,6 +1020,7 @@ fun ScenesAndBackupSection(
     caps: DeviceCaps,
     activeSceneKey: String?,
     onApplyScene: (ScenePreset) -> Unit,
+    onAddWidgetClick: () -> Unit,
     onImportBackupClick: () -> Unit,
     onExportBackupClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -1092,7 +1093,59 @@ fun ScenesAndBackupSection(
             }
         }
 
-        Spacer(modifier = Modifier.height(22.dp))
+        Spacer(modifier = Modifier.height(18.dp))
+
+        // Home Screen Widget Strip
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(17.dp))
+                .background(Brush.linearGradient(listOf(colors.glassStart, colors.glassEnd)))
+                .border(1.dp, colors.glassBorder, RoundedCornerShape(17.dp))
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f).padding(end = 10.dp)) {
+                Text(
+                    text = "CONTROLLO RAPIDO SULLA HOME",
+                    fontFamily = DmSansFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 8.5.sp,
+                    letterSpacing = 1.2.sp,
+                    color = colors.eyebrow
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Controlla accensione, luminosità e scene dalla Home senza aprire l’app.",
+                    fontFamily = DmSansFontFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 11.sp,
+                    color = colors.muted
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(11.dp))
+                    .background(Brush.horizontalGradient(listOf(colors.primaryBtnStart, colors.primaryBtnEnd)))
+                    .clickable(onClick = onAddWidgetClick)
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .testTag("pin_home_widget_button"),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                LumaIcon(type = LumaIconType.PLUS, color = Color.White, size = 12.dp)
+                Text(
+                    text = stringResource(R.string.btn_pin_widget),
+                    fontFamily = DmSansFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.5.sp,
+                    color = Color.White
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Backup Strip
         Row(

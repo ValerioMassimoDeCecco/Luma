@@ -1,11 +1,16 @@
 package it.luma.tapo
 
+import android.app.Activity
+import android.os.Build
 import android.os.Bundle
+import android.view.Display
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -49,7 +54,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import it.luma.tapo.ui.LumaUiState
 import it.luma.tapo.ui.LumaViewModel
 import it.luma.tapo.ui.components.ControlsPanelCard
@@ -67,11 +71,13 @@ import it.luma.tapo.ui.theme.LocalLumaColors
 import it.luma.tapo.ui.theme.LumaTheme
 
 class MainActivity : ComponentActivity() {
+    private val lumaViewModel: LumaViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        enableHighRefreshRate120Hz()
         setContent {
-            val lumaViewModel: LumaViewModel = viewModel()
             val uiState by lumaViewModel.uiState.collectAsStateWithLifecycle()
 
             LumaTheme(darkTheme = uiState.isDark) {
@@ -80,6 +86,58 @@ class MainActivity : ComponentActivity() {
                     viewModel = lumaViewModel
                 )
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        enableHighRefreshRate120Hz()
+        lumaViewModel.onAppResumed()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            enableHighRefreshRate120Hz()
+        }
+    }
+
+    /**
+     * Negotiates 120Hz (or the highest available refresh rate mode on the display)
+     * on compatible Android devices while preserving native physical resolution.
+     */
+    private fun Activity.enableHighRefreshRate120Hz() {
+        try {
+            val currentDisplay: Display? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                display
+            } else {
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay
+            }
+            val modes = currentDisplay?.supportedModes
+            val activeMode = currentDisplay?.mode
+            if (!modes.isNullOrEmpty() && activeMode != null) {
+                // Prefer modes matching the active physical resolution with the highest refresh rate (e.g. 120Hz+)
+                val sameResBest = modes
+                    .filter { it.physicalWidth == activeMode.physicalWidth && it.physicalHeight == activeMode.physicalHeight }
+                    .maxByOrNull { it.refreshRate }
+                val bestMode = sameResBest ?: modes.maxByOrNull { it.refreshRate }
+                if (bestMode != null) {
+                    val params: WindowManager.LayoutParams = window.attributes
+                    if (params.preferredDisplayModeId != bestMode.modeId || params.preferredRefreshRate != bestMode.refreshRate) {
+                        params.preferredDisplayModeId = bestMode.modeId
+                        params.preferredRefreshRate = bestMode.refreshRate
+                        window.attributes = params
+                    }
+                    return
+                }
+            }
+            // Fallback request for 120Hz
+            val params: WindowManager.LayoutParams = window.attributes
+            params.preferredRefreshRate = 120f
+            window.attributes = params
+        } catch (_: Throwable) {
+            // Safe no-op on emulators or displays that restrict mode switching
         }
     }
 }
@@ -310,6 +368,7 @@ fun LumaAppScreen(
                         caps = uiState.caps,
                         activeSceneKey = uiState.activeSceneKey,
                         onApplyScene = viewModel::applyScene,
+                        onAddWidgetClick = viewModel::requestAddHomeWidget,
                         onImportBackupClick = {
                             importLauncher.launch("application/json")
                         },
