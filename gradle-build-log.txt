@@ -1,0 +1,61 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :convertXmlValueResourcesForMain NO-SOURCE
+> Task :copyNonXmlValueResourcesForMain
+> Task :prepareComposeResourcesTaskForMain
+> Task :generateResourceAccessorsForMain
+> Task :generateActualResourceCollectorsForMain
+> Task :generateComposeResClass
+> Task :assembleMainResources
+> Task :processResources
+
+> Task :compileKotlin
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/desktop/Main.kt:14:8 Unresolved reference 'LumaDesktop'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/desktop/Main.kt:27:32 Unresolved reference 'Res'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1116:32 Unresolved reference 'JFileChooser'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1116:47 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1116:53 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1117:13 Unresolved reference 'dialogTitle'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1118:13 Unresolved reference 'isFileSelectionEnabled'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1119:13 Unresolved reference 'selectedFile'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1119:28 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1119:33 Unresolved reference 'io'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1121:21 Unresolved reference 'showSaveDialog'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1121:54 Unresolved reference 'JFileChooser'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1122:32 Unresolved reference 'selectedFile'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1126:74 Unresolved reference 'absolutePath'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1134:32 Unresolved reference 'JFileChooser'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1134:47 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1134:53 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1135:13 Unresolved reference 'dialogTitle'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1136:13 Unresolved reference 'isFileSelectionEnabled'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1137:13 Unresolved reference 'isDirectorySelectionEnabled'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1138:13 Unresolved reference 'fileFilter'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1140:21 Unresolved reference 'showOpenDialog'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1140:54 Unresolved reference 'JFileChooser'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaDesktopViewModel.kt:1141:32 Unresolved reference 'selectedFile'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaTheme.kt:11:8 Unresolved reference 'LumaDesktop'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaTheme.kt:78:32 Unresolved reference 'Res'.
+e: file:///D:/a/Luma/Luma/desktop/src/main/kotlin/it/luma/tapo/ui/LumaTheme.kt:79:33 Unresolved reference 'Res'.
+
+> Task :compileKotlin FAILED
+gradle/actions: Writing build results to D:\a\_temp\.gradle-actions\build-results\__run-1795177365761.json
+
+[Incubating] Problems report is available at: file:///D:/a/Luma/Luma/desktop/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 34s
+8 actionable tasks: 8 executed
