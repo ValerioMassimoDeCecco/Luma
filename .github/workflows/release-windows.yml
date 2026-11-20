@@ -48,17 +48,21 @@ jobs:
       - name: Segnala errore di build
         if: failure()
         shell: pwsh
+        continue-on-error: true
         run: |
           $logPath = "$env:TEMP\gradle-build.log"
-          $bodyPath = "$env:TEMP\build-error-body.md"
+          $logFile = "gradle-build-log.txt"
           if (Test-Path $logPath) {
-              $content = Get-Content $logPath -Raw
-              $tail = $content.Substring([Math]::Max(0, $content.Length - 10000))
+              Copy-Item $logPath $logFile -Force
           } else {
-              $tail = "no gradle log captured"
+              Set-Content -Path $logFile -Value "no gradle log captured"
           }
-          Set-Content -Path $bodyPath -Value "## Build Windows fallito`n`n````text`n$tail`n````" -Encoding UTF8
-          gh issue create --repo "${{ github.repository }}" --title "Build Windows fallito - ${{ github.sha }}" --body-file $bodyPath
+          git config user.name "Luma CI"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout -b ci-debug-logs
+          git add gradle-build-log.txt
+          git commit -m "ci: gradle build log for ${{ github.sha }}"
+          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ci-debug-logs:ci-debug-logs
 
       - name: Assembla app-image ed installer exe con jpackage
         shell: pwsh
