@@ -38,7 +38,25 @@ jobs:
           gradle-version: "9.3.1"
 
       - name: Compila l'app desktop (fat jar Compose)
-        run: gradle -p desktop packageUberJarForCurrentOS --no-daemon
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          & gradle -p desktop packageUberJarForCurrentOS --no-daemon 2>&1 | Tee-Object -FilePath "$env:TEMP\gradle-build.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Segnala errore di build
+        if: failure()
+        shell: pwsh
+        run: |
+          $logPath = "$env:TEMP\gradle-build.log"
+          $tail = "no gradle log captured"
+          if (Test-Path $logPath) {
+              $content = Get-Content $logPath -Raw
+              $tail = $content.Substring([Math]::Max(0, $content.Length - 10000))
+          }
+          $body = "## Build Windows fallito`n`n````text`n$tail`n````"
+          $payload = @{ title = "Build Windows fallito - ${{ github.sha }}"; body = $body } | ConvertTo-Json -Compress
+          Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/issues" -Method Post -Headers @{ Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" } -Body $payload -ContentType "application/json"
 
       - name: Assembla app-image ed installer exe con jpackage
         shell: pwsh
