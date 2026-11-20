@@ -92,7 +92,7 @@ jobs:
             --main-class "it.luma.tapo.desktop.MainKt" `
             --dest $appImageDir `
             --name "Luma" `
-            --app-version "1.01" `
+            --app-version "1.0.1" `
             --vendor "Luma" `
             --copyright "Copyright (c) 2026 Luma" `
             --description "Luma per Tapo: controllo lampadine smart Tapo sulla rete locale"
@@ -109,7 +109,7 @@ jobs:
             --input $appImage.FullName `
             --dest $installerDir `
             --name "Luma" `
-            --app-version "1.01" `
+            --app-version "1.0.1" `
             --vendor "Luma" `
             --copyright "Copyright (c) 2026 Luma" `
             --description "Luma per Tapo: controllo lampadine smart Tapo sulla rete locale" `
