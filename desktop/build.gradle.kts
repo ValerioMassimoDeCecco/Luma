@@ -37,7 +37,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Exe)
             packageName = "LumaPerTapo"
-            packageVersion = "1.01"
+            packageVersion = "1.0.1"
         }
     }
 }
