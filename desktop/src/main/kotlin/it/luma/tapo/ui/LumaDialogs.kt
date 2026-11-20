@@ -41,7 +41,7 @@ import it.luma.tapo.model.LumaPresets
 import kotlin.math.roundToInt
 
 @Composable
-private fun LumaDeviceDialog(viewModel: LumaDesktopViewModel, state: LumaUiState) {
+fun LumaDeviceDialog(viewModel: LumaDesktopViewModel, state: LumaUiState) {
     if (!state.showDeviceDialog) return
 
     var name by remember { mutableStateOf("") }
@@ -198,7 +198,7 @@ private fun LumaDeviceDialog(viewModel: LumaDesktopViewModel, state: LumaUiState
                                     ) {
                                         Checkbox(
                                             checked = selected,
-                                            onClick = { viewModel.toggleBatchIpSelection(device.ip) }
+                                            onCheckedChange = { viewModel.toggleBatchIpSelection(device.ip) }
                                         )
                                         Column(Modifier.weight(1f)) {
                                             Text(device.ip, style = MaterialTheme.typography.bodyMedium)
@@ -261,7 +261,7 @@ private fun LumaDeviceDialog(viewModel: LumaDesktopViewModel, state: LumaUiState
 }
 
 @Composable
-private fun LumaRoomDialog(viewModel: LumaDesktopViewModel, state: LumaUiState) {
+fun LumaRoomDialog(viewModel: LumaDesktopViewModel, state: LumaUiState) {
     if (!state.showRoomDialog) return
 
     var roomName by remember { mutableStateOf("") }
@@ -308,7 +308,7 @@ private fun LumaRoomDialog(viewModel: LumaDesktopViewModel, state: LumaUiState) 
 }
 
 @Composable
-private fun LumaImportDialog(viewModel: LumaDesktopViewModel, state: LumaUiState) {
+fun LumaImportDialog(viewModel: LumaDesktopViewModel, state: LumaUiState) {
     val house = state.pendingImportHouse ?: return
 
     AlertDialog(
@@ -344,7 +344,7 @@ private fun LumaImportDialog(viewModel: LumaDesktopViewModel, state: LumaUiState
 }
 
 @Composable
-private fun LumaCustomColorDialog(viewModel: LumaDesktopViewModel, state: LumaUiState) {
+fun LumaCustomColorDialog(viewModel: LumaDesktopViewModel, state: LumaUiState) {
     if (!state.showCustomColorDialog) return
 
     var hue by remember(state.showCustomColorDialog) { mutableStateOf(state.hue.toFloat()) }

@@ -3,7 +3,7 @@ package it.luma.tapo.desktop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -11,7 +11,7 @@ import it.luma.tapo.data.LumaDesktopStorage
 import it.luma.tapo.ui.LumaApp
 import it.luma.tapo.ui.LumaDesktopViewModel
 import it.luma.tapo.ui.LumaTheme
-import it.luma.tapo.desktop.generated.resources.Res
+import LumaDesktop.generated.resources.Res
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -23,7 +23,7 @@ fun LumaWindow(onCloseRequest: () -> Unit) {
     Window(
         onCloseRequest = onCloseRequest,
         title = "Luma per Tapo",
-        state = rememberWindowState(width = Dp(1120), height = Dp(780)),
+        state = rememberWindowState(width = 1120.dp, height = 780.dp),
         icon = painterResource(Res.drawable.ic_launcher)
     ) {
         LumaTheme(darkTheme = state.value.isDark) {
