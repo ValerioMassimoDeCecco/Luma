@@ -1113,13 +1113,13 @@ class LumaDesktopViewModel(storage: it.luma.tapo.data.LumaDesktopStorage) {
 
     /** Shows a native file chooser to pick where to save the JSON backup. */
     fun openExportPicker() {
-        val chooser = java.awt.JFileChooser().apply {
+        val chooser = javax.swing.JFileChooser().apply {
             dialogTitle = "Esporta backup di Luma"
-            isFileSelectionEnabled = true
+            fileSelectionMode = javax.swing.JFileChooser.FILES_ONLY
             selectedFile = java.io.File("luma-backup.json")
         }
-        if (chooser.showSaveDialog(null) == java.awt.JFileChooser.APPROVE_OPTION) {
-            val file = chooser.selectedFile
+        if (chooser.showSaveDialog(null) == javax.swing.JFileChooser.APPROVE_OPTION) {
+            val file = chooser.selectedFile ?: return
             val target = if (file.extension.isBlank()) java.io.File(file.parentFile, "${file.name}.json") else file
             exportHouseBackup { json ->
                 runCatching { target.writeText(json) }
@@ -1131,14 +1131,13 @@ class LumaDesktopViewModel(storage: it.luma.tapo.data.LumaDesktopStorage) {
 
     /** Shows a native file chooser to pick a JSON backup to import. */
     fun openImportPicker() {
-        val chooser = java.awt.JFileChooser().apply {
+        val chooser = javax.swing.JFileChooser().apply {
             dialogTitle = "Importa backup di Luma"
-            isFileSelectionEnabled = true
-            isDirectorySelectionEnabled = false
+            fileSelectionMode = javax.swing.JFileChooser.FILES_ONLY
             fileFilter = javax.swing.filechooser.FileNameExtensionFilter("File JSON", "json")
         }
-        if (chooser.showOpenDialog(null) == java.awt.JFileChooser.APPROVE_OPTION) {
-            val file = chooser.selectedFile
+        if (chooser.showOpenDialog(null) == javax.swing.JFileChooser.APPROVE_OPTION) {
+            val file = chooser.selectedFile ?: return
             runCatching { onImportJsonSelected(file.readText()) }
                 .onFailure { showToast("Impossibile leggere il file selezionato.", isError = true) }
         }

@@ -11,7 +11,7 @@ import it.luma.tapo.data.LumaDesktopStorage
 import it.luma.tapo.ui.LumaApp
 import it.luma.tapo.ui.LumaDesktopViewModel
 import it.luma.tapo.ui.LumaTheme
-import LumaDesktop.generated.resources.Res
+import it.luma.tapo.desktop.lumadesktop.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

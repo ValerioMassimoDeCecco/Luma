@@ -38,91 +38,22 @@ jobs:
         with:
           gradle-version: "9.3.1"
 
-      - name: Compila l'app desktop (fat jar Compose)
+      - name: Compila distribuzione Windows (Exe installer e Portable app-image)
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          & gradle -p desktop packageUberJarForCurrentOS --no-daemon 2>&1 | Tee-Object -FilePath "$env:TEMP\gradle-build.log"
+          & gradle -p desktop packageDistributionForCurrentOS createDistributable --no-daemon 2>&1 | Tee-Object -FilePath "$env:TEMP\gradle-build.log"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Segnala errore di build
-        if: failure()
-        shell: pwsh
-        continue-on-error: true
-        run: |
-          $logPath = "$env:TEMP\gradle-build.log"
-          $logFile = "gradle-build-log.txt"
-          if (Test-Path $logPath) {
-              Copy-Item $logPath $logFile -Force
-          } else {
-              Set-Content -Path $logFile -Value "no gradle log captured"
-          }
-          git config user.name "Luma CI"
-          git config user.email "ci@users.noreply.github.com"
-          git checkout -b ci-debug-logs
-          git add gradle-build-log.txt
-          git commit -m "ci: gradle build log for ${{ github.sha }}"
-          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ci-debug-logs:ci-debug-logs
-
-      - name: Assembla app-image ed installer exe con jpackage
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Stop"
-
-          $jar = Get-ChildItem -Path "desktop/build" -Recurse -Filter "*.jar" |
-            Where-Object { $_.FullName -notmatch '\\runtime\\' -and $_.Name -notmatch 'sources|javadoc' -and $_.Length -gt 1MB } |
-            Sort-Object Length -Descending |
-            Select-Object -First 1
-          if (-not $jar) { throw "Fat jar dell'app non trovato in desktop/build" }
-          Write-Host "Using fat jar: $($jar.FullName) ($([math]::Round($jar.Length / 1MB, 1)) MB)"
-
           $distDir = Join-Path $PWD "dist"
-          $appDir = Join-Path $distDir "app"
-          New-Item -ItemType Directory -Force $appDir | Out-Null
-          Copy-Item $jar.FullName (Join-Path $appDir "luma.jar")
+          New-Item -ItemType Directory -Force $distDir | Out-Null
 
-          $jpackage = Join-Path $env:JAVA_HOME "bin\jpackage.exe"
-          if (-not (Test-Path $jpackage)) { throw "jpackage non trovato in $env:JAVA_HOME" }
-
-          $appImageDir = Join-Path $distDir "appimage"
-          & $jpackage `
-            --type app-image `
-            --input $appDir `
-            --main-jar "luma.jar" `
-            --main-class "it.luma.tapo.desktop.MainKt" `
-            --dest $appImageDir `
-            --name "Luma" `
-            --app-version "1.0.1" `
-            --vendor "Luma" `
-            --copyright "Copyright (c) 2026 Luma" `
-            --description "Luma per Tapo: controllo lampadine smart Tapo sulla rete locale" `
-            --icon "desktop/src/main/composeResources/files/luma.ico"
-          if ($LASTEXITCODE -ne 0) { throw "jpackage app-image fallito" }
-
-          $appImage = Get-ChildItem $appImageDir -Directory | Select-Object -First 1
-          if (-not $appImage) { throw "App image non creata" }
-          Write-Host "App image creata: $($appImage.FullName)"
-
-          $installerDir = Join-Path $distDir "installer"
-          New-Item -ItemType Directory -Force $installerDir | Out-Null
-          & $jpackage `
-            --type exe `
-            --input $appImage.FullName `
-            --dest $installerDir `
-            --name "Luma" `
-            --app-version "1.0.1" `
-            --vendor "Luma" `
-            --copyright "Copyright (c) 2026 Luma" `
-            --description "Luma per Tapo: controllo lampadine smart Tapo sulla rete locale" `
-            --icon "desktop/src/main/composeResources/files/luma.ico" `
-            --win-shortcut `
-            --win-menu
-          if ($LASTEXITCODE -ne 0) { throw "jpackage installer exe fallito" }
-
-          $installer = Get-ChildItem $installerDir -Filter "*.exe" | Select-Object -First 1
-          if (-not $installer) { throw "Installer exe non creato" }
+          $installer = Get-ChildItem -Path "desktop/build/compose/binaries/main/exe" -Filter "*.exe" | Select-Object -First 1
+          if (-not $installer) { throw "Installer EXE non trovato in desktop/build/compose/binaries/main/exe" }
           Copy-Item $installer.FullName (Join-Path $distDir "Luma-per-Tapo-v1.01-setup.exe") -Force
 
+          $appImage = Get-ChildItem -Path "desktop/build/compose/binaries/main/app" -Directory | Select-Object -First 1
+          if (-not $appImage) { throw "App image non trovata in desktop/build/compose/binaries/main/app" }
           Compress-Archive -Path (Join-Path $appImage.FullName "*") -DestinationPath (Join-Path $distDir "Luma-per-Tapo-v1.01-windows-portable.zip") -Force
 
           Get-ChildItem $distDir | Select-Object Name, @{ N = "SizeMB"; E = { [math]::Round($_.Length / 1MB, 1) } }

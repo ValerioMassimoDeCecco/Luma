@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import LumaDesktop.generated.resources.Res
+import it.luma.tapo.desktop.lumadesktop.generated.resources.*
 import org.jetbrains.compose.resources.Font
 
 private val LumaLavender = Color(0xFF7C66D5)
