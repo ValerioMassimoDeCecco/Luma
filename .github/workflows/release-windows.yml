@@ -95,7 +95,8 @@ jobs:
             --app-version "1.0.1" `
             --vendor "Luma" `
             --copyright "Copyright (c) 2026 Luma" `
-            --description "Luma per Tapo: controllo lampadine smart Tapo sulla rete locale"
+            --description "Luma per Tapo: controllo lampadine smart Tapo sulla rete locale" `
+            --icon "desktop/src/main/composeResources/files/luma.ico"
           if ($LASTEXITCODE -ne 0) { throw "jpackage app-image fallito" }
 
           $appImage = Get-ChildItem $appImageDir -Directory | Select-Object -First 1
@@ -113,6 +114,7 @@ jobs:
             --vendor "Luma" `
             --copyright "Copyright (c) 2026 Luma" `
             --description "Luma per Tapo: controllo lampadine smart Tapo sulla rete locale" `
+            --icon "desktop/src/main/composeResources/files/luma.ico" `
             --win-shortcut `
             --win-menu
           if ($LASTEXITCODE -ne 0) { throw "jpackage installer exe fallito" }
