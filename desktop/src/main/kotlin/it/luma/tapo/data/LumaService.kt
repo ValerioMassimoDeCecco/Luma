@@ -32,7 +32,7 @@ import javax.crypto.spec.SecretKeySpec
  */
 class LumaService(private val storage: LumaDesktopStorage) {
     private val prefs = storage
-    private val keystoreVault = LumaKeystoreVault(prefs)
+    private val keystoreVault = LumaDesktopVault(prefs)
     private val houseMutex = Mutex()
     private val sessionMutex = Mutex()
     private val deviceLocks = mutableMapOf<String, Mutex>()

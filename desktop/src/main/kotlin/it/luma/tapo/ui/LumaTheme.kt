@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import it.luma.tapo.desktop.generated.resources.Res
+import LumaDesktop.generated.resources.Res
 import org.jetbrains.compose.resources.Font
 
 private val LumaLavender = Color(0xFF7C66D5)
@@ -78,19 +78,20 @@ fun LumaTheme(
     val sans = FontFamily(Font(Res.font.dm_sans, FontWeight.Normal))
     val serif = FontFamily(Font(Res.font.dm_serif_display, FontWeight.Normal))
 
+    val base = Typography()
     val typography = Typography(
-        displayLarge = Typography.default.displayLarge.copy(fontFamily = serif),
-        displayMedium = Typography.default.displayMedium.copy(fontFamily = serif),
-        headlineLarge = Typography.default.headlineLarge.copy(fontFamily = serif),
-        headlineMedium = Typography.default.headlineMedium.copy(fontFamily = serif),
-        titleLarge = Typography.default.titleLarge.copy(fontFamily = serif),
-        titleMedium = Typography.default.titleMedium.copy(fontFamily = sans, fontWeight = FontWeight.SemiBold),
-        bodyLarge = Typography.default.bodyLarge.copy(fontFamily = sans),
-        bodyMedium = Typography.default.bodyMedium.copy(fontFamily = sans),
-        bodySmall = Typography.default.bodySmall.copy(fontFamily = sans),
-        labelLarge = Typography.default.labelLarge.copy(fontFamily = sans, fontWeight = FontWeight.Medium),
-        labelMedium = Typography.default.labelMedium.copy(fontFamily = sans, fontWeight = FontWeight.Medium),
-        labelSmall = Typography.default.labelSmall.copy(fontFamily = sans)
+        displayLarge = base.displayLarge.copy(fontFamily = serif),
+        displayMedium = base.displayMedium.copy(fontFamily = serif),
+        headlineLarge = base.headlineLarge.copy(fontFamily = serif),
+        headlineMedium = base.headlineMedium.copy(fontFamily = serif),
+        titleLarge = base.titleLarge.copy(fontFamily = serif),
+        titleMedium = base.titleMedium.copy(fontFamily = sans, fontWeight = FontWeight.SemiBold),
+        bodyLarge = base.bodyLarge.copy(fontFamily = sans),
+        bodyMedium = base.bodyMedium.copy(fontFamily = sans),
+        bodySmall = base.bodySmall.copy(fontFamily = sans),
+        labelLarge = base.labelLarge.copy(fontFamily = sans, fontWeight = FontWeight.Medium),
+        labelMedium = base.labelMedium.copy(fontFamily = sans, fontWeight = FontWeight.Medium),
+        labelSmall = base.labelSmall.copy(fontFamily = sans)
     )
 
     MaterialTheme(
