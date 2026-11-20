@@ -1,9 +1,16 @@
 package it.luma.tapo.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,568 +18,344 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CloudDownload
-import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.PowerSettingsNew
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import it.luma.tapo.model.ConnectionBadgeState
-import it.luma.tapo.model.LumaPresets
-import kotlin.math.roundToInt
+import it.luma.tapo.ui.components.ControlsPanelCard
+import it.luma.tapo.ui.components.CustomColorPickerDialog
+import it.luma.tapo.ui.components.DeviceHeroCard
+import it.luma.tapo.ui.components.DeviceSettingsDialog
+import it.luma.tapo.ui.components.ImportHouseConfirmDialog
+import it.luma.tapo.ui.components.LumaHomeBar
+import it.luma.tapo.ui.components.LumaIntroAndNetworkSection
+import it.luma.tapo.ui.components.LumaTopBar
+import it.luma.tapo.ui.components.RoomDialog
+import it.luma.tapo.ui.components.ScenesAndBackupSection
 
 @Composable
 fun LumaApp(viewModel: LumaDesktopViewModel) {
-    val state by viewModel.uiState.collectAsState(initial = viewModel.uiState.value)
+    val uiState by viewModel.uiState.collectAsState(initial = viewModel.uiState.value)
+    val colors = LocalLumaColors.current
 
-    Row(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        LumaRoomsRail(viewModel, state)
-        LumaMainPanel(viewModel, state)
-    }
-
-    LumaToast(state)
-
-    LumaDeviceDialog(viewModel, state)
-    LumaRoomDialog(viewModel, state)
-    LumaImportDialog(viewModel, state)
-    LumaCustomColorDialog(viewModel, state)
-}
-
-@Composable
-private fun LumaRoomsRail(viewModel: LumaDesktopViewModel, state: LumaUiState) {
-    Surface(
-        modifier = Modifier
-            .width(272.dp)
-            .fillMaxSize(),
-        color = MaterialTheme.colorScheme.surfaceVariant
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                "Luma",
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                "per Tapo",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(Modifier.height(20.dp))
-
-            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                state.house.rooms.forEach { room ->
-                    val selected = room.id == state.selectedRoomId
-                    Card(
-                        onClick = { viewModel.selectRoom(room.id) },
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-                            Text(
-                                room.name,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                "${state.house.devices.count { it.roomId == room.id }} lampadine",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(Modifier.weight(1f))
-
-            OutlinedButton(
-                onClick = { viewModel.openRoomDialog(edit = false) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Nuova stanza")
-            }
-            Spacer(Modifier.height(12.dp))
-
-            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                TextButton(
-                    onClick = { viewModel.openImportPicker() },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Filled.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("Importa backup")
-                }
-                TextButton(
-                    onClick = { viewModel.openExportPicker() },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Filled.CloudUpload, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("Esporta backup")
-                }
-            }
-            Spacer(Modifier.height(8.dp))
-            IconButton(onClick = { viewModel.toggleTheme() }) {
-                Icon(
-                    if (state.isDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                    contentDescription = "Cambia tema"
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun LumaMainPanel(viewModel: LumaDesktopViewModel, state: LumaUiState) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(colors.bgStart, colors.bgMid, colors.bgEnd)
+                )
+            )
     ) {
-        LumaHeader(viewModel, state)
-        Spacer(Modifier.height(18.dp))
+        // Atmospheric background soft radial orbs matching the mobile app
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(colors.orbOne, colors.orbOne.copy(alpha = 0f)),
+                    center = Offset(size.width * 0.12f, size.height * 0.25f),
+                    radius = size.minDimension * 0.65f
+                ),
+                radius = size.minDimension * 0.65f,
+                center = Offset(size.width * 0.12f, size.height * 0.25f)
+            )
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(colors.orbTwo, colors.orbTwo.copy(alpha = 0f)),
+                    center = Offset(size.width * 0.88f, size.height * 0.14f),
+                    radius = size.minDimension * 0.70f
+                ),
+                radius = size.minDimension * 0.70f,
+                center = Offset(size.width * 0.88f, size.height * 0.14f)
+            )
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(colors.orbThree, colors.orbThree.copy(alpha = 0f)),
+                    center = Offset(size.width * 0.75f, size.height * 0.92f),
+                    radius = size.minDimension * 0.70f
+                ),
+                radius = size.minDimension * 0.70f,
+                center = Offset(size.width * 0.75f, size.height * 0.92f)
+            )
+        }
 
-        val device = state.currentDevice
-        if (device == null || !state.connected) {
-            LumaEmptyState(viewModel, state)
-        } else {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val isExpandedScreen = maxWidth >= 760.dp
+
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = if (isExpandedScreen) 32.dp else 18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LumaDashboard(viewModel, state)
-            }
-        }
-    }
-}
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .widthIn(max = 1180.dp)
+                ) {
+                    LumaTopBar(
+                        connectionState = uiState.connectionBadgeState,
+                        connectionText = uiState.connectionText,
+                        isDark = uiState.isDark,
+                        canRefresh = uiState.connected && !uiState.isConnectingOrSaving && !uiState.isRefreshing,
+                        onToggleTheme = viewModel::toggleTheme,
+                        onRefresh = { viewModel.refreshState(forceToast = true) },
+                        onOpenSettings = {
+                            viewModel.openDeviceDialog(edit = uiState.currentDevice != null)
+                        },
+                        onDiscoverNetworkClick = viewModel::openDiscoveryAndScan
+                    )
 
-@Composable
-private fun LumaHeader(viewModel: LumaDesktopViewModel, state: LumaUiState) {
-    Card(Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(Modifier.weight(1f)) {
-                Text(
-                    state.currentDevice?.name?.takeIf { it.isNotEmpty() } ?: "Nessuna lampadina",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val badgeColor = when (state.connectionBadgeState) {
-                        ConnectionBadgeState.ONLINE -> MaterialTheme.colorScheme.primary
-                        ConnectionBadgeState.BUSY -> MaterialTheme.colorScheme.tertiary
-                        ConnectionBadgeState.ERROR -> MaterialTheme.colorScheme.error
-                        ConnectionBadgeState.IDLE -> MaterialTheme.colorScheme.outline
+                    LumaIntroAndNetworkSection(
+                        onDiscoverNetworkClick = viewModel::openDiscoveryAndScan
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    LumaHomeBar(
+                        rooms = uiState.house.rooms,
+                        devicesInRoom = uiState.devicesInSelectedRoom,
+                        allDevices = uiState.house.devices,
+                        selectedRoomId = uiState.selectedRoomId,
+                        selectedDeviceId = uiState.selectedDeviceId,
+                        onSelectRoom = viewModel::selectRoom,
+                        onEditRoom = { viewModel.openRoomDialog(edit = true) },
+                        onAddRoom = { viewModel.openRoomDialog(edit = false) },
+                        onSelectDevice = viewModel::selectDevice,
+                        onEditDevice = { viewModel.openDeviceDialog(edit = true) },
+                        onAddDevice = { viewModel.openDeviceDialog(edit = false) },
+                        onDiscoverNetworkClick = viewModel::openDiscoveryAndScan
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Adaptive layout: side-by-side on wide screens (desktop), stacked if narrow
+                    if (isExpandedScreen) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(18.dp),
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            DeviceHeroCard(
+                                profile = uiState.currentDevice,
+                                connected = uiState.connected,
+                                linkError = uiState.linkError,
+                                isOn = uiState.isOn,
+                                model = uiState.model,
+                                ip = uiState.ip,
+                                brightness = uiState.bri,
+                                lightColor = uiState.currentLightColor,
+                                lightDescription = uiState.lightDescription,
+                                onPowerOrConnectClick = viewModel::onPowerOrConnectClicked,
+                                modifier = Modifier.weight(1.15f)
+                            )
+
+                            ControlsPanelCard(
+                                profile = uiState.currentDevice,
+                                connected = uiState.connected,
+                                isOn = uiState.isOn,
+                                caps = uiState.caps,
+                                brightness = uiState.bri,
+                                ct = uiState.ct,
+                                minCt = uiState.minCt,
+                                maxCt = uiState.maxCt,
+                                hue = uiState.hue,
+                                sat = uiState.sat,
+                                mode = uiState.mode,
+                                editMode = uiState.editMode,
+                                onBrightnessChange = viewModel::onBrightnessChanged,
+                                onSelectEditMode = viewModel::onSelectEditMode,
+                                onWhiteTempChange = viewModel::onWhiteTemperatureChanged,
+                                onColorChange = viewModel::onColorChanged,
+                                onOpenCustomColorPicker = viewModel::openCustomColorDialog,
+                                modifier = Modifier.weight(0.95f)
+                            )
+                        }
+                    } else {
+                        DeviceHeroCard(
+                            profile = uiState.currentDevice,
+                            connected = uiState.connected,
+                            linkError = uiState.linkError,
+                            isOn = uiState.isOn,
+                            model = uiState.model,
+                            ip = uiState.ip,
+                            brightness = uiState.bri,
+                            lightColor = uiState.currentLightColor,
+                            lightDescription = uiState.lightDescription,
+                            onPowerOrConnectClick = viewModel::onPowerOrConnectClicked
+                        )
+
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        ControlsPanelCard(
+                            profile = uiState.currentDevice,
+                            connected = uiState.connected,
+                            isOn = uiState.isOn,
+                            caps = uiState.caps,
+                            brightness = uiState.bri,
+                            ct = uiState.ct,
+                            minCt = uiState.minCt,
+                            maxCt = uiState.maxCt,
+                            hue = uiState.hue,
+                            sat = uiState.sat,
+                            mode = uiState.mode,
+                            editMode = uiState.editMode,
+                            onBrightnessChange = viewModel::onBrightnessChanged,
+                            onSelectEditMode = viewModel::onSelectEditMode,
+                            onWhiteTempChange = viewModel::onWhiteTemperatureChanged,
+                            onColorChange = viewModel::onColorChanged,
+                            onOpenCustomColorPicker = viewModel::openCustomColorDialog
+                        )
                     }
-                    Surface(
-                        color = badgeColor,
-                        shape = RoundedCornerShape(999.dp),
-                        modifier = Modifier.height(24.dp)
+
+                    Spacer(modifier = Modifier.height(22.dp))
+
+                    ScenesAndBackupSection(
+                        connected = uiState.connected,
+                        caps = uiState.caps,
+                        activeSceneKey = uiState.activeSceneKey,
+                        onApplyScene = viewModel::applyScene,
+                        onImportBackupClick = viewModel::openImportPicker,
+                        onExportBackupClick = {
+                            viewModel.openExportPicker()
+                        },
+                        onDiscoverNetworkClick = viewModel::openDiscoveryAndScan
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Footer
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            state.connectionText,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = if (state.connectionBadgeState == ConnectionBadgeState.IDLE)
-                                MaterialTheme.colorScheme.onSurface else Color.White,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp)
+                            text = "FATTO PER FAR BRILLARE OGNI MOMENTO",
+                            fontFamily = DmSansFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 8.sp,
+                            letterSpacing = 1.3.sp,
+                            color = colors.eyebrow
                         )
-                    }
-                    if (state.ip.isNotEmpty()) {
-                        Spacer(Modifier.width(10.dp))
                         Text(
-                            "${state.model.ifEmpty { "Tapo" }} · ${state.ip}",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = "LUMA PER TAPO · v1.02 · WINDOWS NATIVE",
+                            fontFamily = DmSansFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 8.sp,
+                            letterSpacing = 1.3.sp,
+                            color = colors.eyebrow
                         )
                     }
                 }
             }
-            IconButton(
-                onClick = { viewModel.refreshState(forceToast = true) },
-                enabled = state.connected && !state.isRefreshing
-            ) {
-                Icon(Icons.Filled.Refresh, contentDescription = "Aggiorna stato")
-            }
-            IconButton(onClick = { viewModel.openDeviceDialog(edit = state.currentDevice != null) }) {
-                Icon(Icons.Filled.Add, contentDescription = "Aggiungi lampadina")
-            }
-            if (state.selectedDeviceId.isNotEmpty()) {
-                IconButton(onClick = { viewModel.deleteCurrentDevice() }) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Rimuovi lampadina")
-                }
-            }
         }
-    }
-}
 
-@Composable
-private fun LumaEmptyState(viewModel: LumaDesktopViewModel, state: LumaUiState) {
-    Card(
-        Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        Column(
+        // Floating Toast Banner
+        AnimatedVisibility(
+            visible = uiState.toastMessage != null,
+            enter = fadeIn() + slideInVertically { it / 2 },
+            exit = fadeOut() + slideOutVertically { it / 2 },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(36.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 20.dp, vertical = 22.dp)
         ) {
-            Icon(
-                Icons.Filled.Lightbulb,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(56.dp)
-            )
-            Text(
-                if (state.currentDevice == null) "Aggiungi la tua prima lampadina" else "Collegamento in corso…",
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                "Scansiona la rete di casa o inserisci manualmente IP, email e modello della lampadina Tapo.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(8.dp))
-            OutlinedButton(onClick = { viewModel.openDiscoveryAndScan() }) {
-                Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Aggiungi lampadina")
-            }
-        }
-    }
-}
-
-@Composable
-private fun LumaDashboard(viewModel: LumaDesktopViewModel, state: LumaUiState) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(28.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            LumaBulbHero(state, onPowerClick = { viewModel.onPowerOrConnectClicked() })
-            Column(Modifier.weight(1f)) {
-                Text(
-                    "${state.currentDevice?.name ?: "Lampadina"}",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                Text(
-                    if (state.isOn) "Accesa" else "Spenta",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = if (state.isOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    state.lightDescription,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(Modifier.height(10.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        "Sessione: ",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        if (state.session.isEmpty()) "—" else "attiva",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-        }
-
-        // Brightness
-        Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Luminosità", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                    Text("${state.bri}%", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                }
-                Slider(
-                    value = state.bri.toFloat(),
-                    onValueChange = { viewModel.onBrightnessChanged(it.roundToInt(), false) },
-                    onValueChangeFinished = { viewModel.onBrightnessChanged(state.bri, true) },
-                    valueRange = 1f..100f
-                )
-            }
-        }
-
-        // Edit mode segmented control (white / color)
-        if (state.caps.ct || state.caps.color) {
-            Card(Modifier.fillMaxWidth()) {
-                Row(Modifier.padding(10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (state.caps.ct) {
-                        LumaModeButton(
-                            selected = state.editMode == it.luma.tapo.model.LightMode.WHITE,
-                            label = "Bianco",
-                            onClick = { viewModel.onSelectEditMode(it.luma.tapo.model.LightMode.WHITE) },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    if (state.caps.color) {
-                        LumaModeButton(
-                            selected = state.editMode == it.luma.tapo.model.LightMode.COLOR,
-                            label = "Colore",
-                            onClick = { viewModel.onSelectEditMode(it.luma.tapo.model.LightMode.COLOR) },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-            }
-        }
-
-        // White temperature
-        if (state.connected && state.editMode == it.luma.tapo.model.LightMode.WHITE && state.caps.ct) {
-            Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Temperatura", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                        Text("${state.ct} K", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                    }
-                    Slider(
-                        value = state.ct.toFloat(),
-                        onValueChange = { viewModel.onWhiteTemperatureChanged(it.roundToInt(), false) },
-                        onValueChangeFinished = { viewModel.onWhiteTemperatureChanged(state.ct, true) },
-                        valueRange = state.minCt.toFloat()..state.maxCt.toFloat()
-                    )
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        LumaPresets.WHITE_PRESETS.forEach { preset ->
-                            FilterChip(
-                                selected = state.ct == preset.kelvin.coerceIn(state.minCt, state.maxCt),
-                                onClick = { viewModel.onWhiteTemperatureChanged(preset.kelvin, true) },
-                                label = { Text(preset.label) }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        // Color controls
-        if (state.connected && state.editMode == it.luma.tapo.model.LightMode.COLOR && state.caps.color) {
-            Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Colore", style = MaterialTheme.typography.titleMedium)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Tonalità", style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f))
-                        Text("$state.hue°", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    Slider(
-                        value = state.hue.toFloat(),
-                        onValueChange = { viewModel.onColorChanged(it.roundToInt(), state.sat, false) },
-                        onValueChangeFinished = { viewModel.onColorChanged(state.hue, state.sat, true) },
-                        valueRange = 0f..360f
-                    )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Saturazione", style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f))
-                        Text("$state.sat%", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    Slider(
-                        value = state.sat.toFloat(),
-                        onValueChange = { viewModel.onColorChanged(state.hue, it.roundToInt(), false) },
-                        onValueChangeFinished = { viewModel.onColorChanged(state.hue, state.sat, true) },
-                        valueRange = 1f..100f
-                    )
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        LumaPresets.QUICK_SWATCHES.forEach { swatch ->
-                            FilterChip(
-                                selected = state.hue == swatch.hue && state.sat == swatch.sat,
-                                onClick = { viewModel.onColorChanged(swatch.hue, swatch.sat, true) },
-                                label = { Text(swatch.label) }
-                            )
-                        }
-                    }
-                    OutlinedButton(onClick = { viewModel.openCustomColorDialog() }) {
-                        Text("Colore personalizzato")
-                    }
-                }
-            }
-        }
-
-        // Scenes
-        Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Scene rapide", style = MaterialTheme.typography.titleMedium)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    LumaPresets.SCENES.forEach { scene ->
-                        FilterChip(
-                            selected = state.activeSceneKey == scene.key,
-                            onClick = { viewModel.applyScene(scene) },
-                            label = { Text(scene.title) }
-                        )
-                    }
-                }
-            }
-        }
-
-        // Device info
-        Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text("Informazioni dispositivo", style = MaterialTheme.typography.titleMedium)
-                Text("Modello: ${state.model.ifEmpty { "—" }}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text("IP locale: ${state.ip.ifEmpty { "—" }}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text("Capacità: ${buildCapsText(state)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
-    }
-}
-
-@Composable
-private fun buildCapsText(state: LumaUiState): String {
-    val parts = mutableListOf<String>()
-    if (state.caps.brightness) parts.add("luminosità")
-    if (state.caps.ct) parts.add("temperatura")
-    if (state.caps.color) parts.add("colore")
-    return if (parts.isEmpty()) "—" else parts.joinToString(", ")
-}
-
-@Composable
-private fun LumaModeButton(selected: Boolean, label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(
-        onClick = onClick,
-        color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-        shape = RoundedCornerShape(12.dp),
-        modifier = modifier.height(40.dp)
-    ) {
-        Text(
-            label,
-            style = MaterialTheme.typography.labelLarge,
-            color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.fillMaxSize().padding()
-        )
-    }
-}
-
-@Composable
-private fun LumaBulbHero(state: LumaUiState, onPowerClick: () -> Unit) {
-    val glow = state.currentLightColor
-    val on = state.isOn
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            modifier = Modifier
-                .size(210.dp)
-                .background(
-                    Brush.radialGradient(
-                        listOf(
-                            glow.copy(alpha = if (on) 0.60f else 0.10f),
-                            glow.copy(alpha = 0f)
-                        )
-                    )
-                )
-                .clip(CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
+            val isErr = uiState.toastIsError
             Box(
                 modifier = Modifier
-                    .size(118.dp)
-                    .background(
-                        Brush.radialGradient(
-                            listOf(
-                                glow.copy(alpha = if (on) 1f else 0.22f),
-                                glow.copy(alpha = if (on) 0.30f else 0.06f)
-                            )
-                        )
-                    )
-                    .clip(CircleShape),
-                contentAlignment = Alignment.Center
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(if (isErr) colors.errorBg else colors.toastBg)
+                    .border(1.dp, if (isErr) colors.errorBorder else colors.toastBorder, RoundedCornerShape(16.dp))
+                    .padding(horizontal = 18.dp, vertical = 12.dp)
             ) {
-                Icon(
-                    Icons.Filled.Lightbulb,
-                    contentDescription = null,
-                    tint = Color.White.copy(alpha = if (on) 0.95f else 0.40f),
-                    modifier = Modifier.size(54.dp)
-                )
-            }
-            IconButton(
-                onClick = onPowerClick,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .size(44.dp)
-            ) {
-                Icon(
-                    Icons.Filled.PowerSettingsNew,
-                    contentDescription = "Accendi / Spegni",
-                    tint = MaterialTheme.colorScheme.onSurface
+                Text(
+                    text = uiState.toastMessage ?: "",
+                    fontFamily = DmSansFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.5.sp,
+                    color = if (isErr) colors.errorText else colors.toastText,
+                    textAlign = TextAlign.Center
                 )
             }
         }
-        Spacer(Modifier.height(8.dp))
-        Text(
-            if (on) "Accesa" else "Spenta",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    // Dialogs
+    if (uiState.showDeviceDialog) {
+        DeviceSettingsDialog(
+            editingDevice = if (uiState.deviceDialogEditMode) uiState.currentDevice else null,
+            rooms = uiState.house.rooms,
+            defaultRoomId = uiState.selectedRoomId,
+            initialError = uiState.deviceFormError,
+            isSaving = uiState.isConnectingOrSaving,
+            initialAccount = uiState.house.accounts.find { it.email == uiState.currentDevice?.email },
+            subnetPrefix = uiState.subnetPrefix,
+            isScanningNetwork = uiState.isScanningNetwork,
+            scanProgress = uiState.scanProgress,
+            hasCompletedScanOnce = uiState.hasCompletedScanOnce,
+            discoveredDevices = uiState.discoveredDevices,
+            selectedBatchIps = uiState.selectedBatchIps,
+            onSubnetPrefixChange = viewModel::onSubnetPrefixChanged,
+            onStartOrStopScan = viewModel::toggleNetworkDiscovery,
+            onToggleBatchSelection = viewModel::toggleBatchIpSelection,
+            onSaveBatchDiscovered = { rId, email, pass, rem, vaultPass ->
+                viewModel.saveBatchDiscoveredDevices(rId, email, pass, rem, vaultPass)
+            },
+            onDismiss = viewModel::closeDeviceDialog,
+            onSave = { name, roomId, model, ip, email, pass, rem, vaultPass ->
+                viewModel.saveDevice(name, roomId, model, ip, email, pass, rem, vaultPass)
+            },
+            onDelete = if (uiState.deviceDialogEditMode) {
+                { viewModel.deleteCurrentDevice() }
+            } else null
         )
     }
-}
 
-@Composable
-private fun LumaToast(state: LumaUiState) {
-    val message = state.toastMessage ?: return
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        Surface(
-            color = if (state.toastIsError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
-            contentColor = if (state.toastIsError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
-            shape = RoundedCornerShape(14.dp),
-            tonalElevation = 3.dp
-        ) {
-            Text(
-                message,
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
-            )
-        }
+    if (uiState.showRoomDialog) {
+        RoomDialog(
+            editingRoom = if (uiState.roomDialogEditMode) uiState.currentRoom else null,
+            initialError = uiState.roomFormError,
+            onDismiss = viewModel::closeRoomDialog,
+            onSave = viewModel::saveRoom,
+            onDelete = if (uiState.roomDialogEditMode && uiState.house.rooms.size > 1) {
+                { viewModel.deleteCurrentRoom() }
+            } else null
+        )
+    }
+
+    if (uiState.showCustomColorDialog) {
+        CustomColorPickerDialog(
+            initialHue = uiState.hue,
+            initialSat = uiState.sat,
+            onDismiss = viewModel::closeCustomColorDialog,
+            onColorSelected = { h, s ->
+                viewModel.onColorChanged(h, s, true)
+                viewModel.closeCustomColorDialog()
+            }
+        )
+    }
+
+    val pendingImport = uiState.pendingImportHouse
+    if (pendingImport != null) {
+        ImportHouseConfirmDialog(
+            roomsCount = pendingImport.rooms.size,
+            devicesCount = pendingImport.devices.size,
+            errorMessage = uiState.importFormError,
+            onDismiss = viewModel::dismissImportDialog,
+            onConfirm = viewModel::confirmImportHouse
+        )
     }
 }

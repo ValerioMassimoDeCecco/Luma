@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.02] — 2026-11-20
+
+### Added
+- **Design nativo Windows allineato all'APK Android**: Palette cromatica lavanda e vetro smerigliato con orbi atmosferici radiali reattivi, tipografia DM Sans e DM Serif Display, e illustrazioni vettoriali Canvas per la lampada 3D e tutte le icone dell'interfaccia.
+- **Tasto di ricerca automatica LAN**: Pulsante dedicato «Cerca luci sulla rete» nella barra superiore, nella striscia di stato LAN e nella selezione luci per scoprire e associare automaticamente le lampadine Tapo senza inserimento manuale dell'IP.
+- **Opzioni avanzate per l'Installer Windows (`.exe`)**:
+  - Selezione guidata della cartella di destinazione personalizzata durante il setup (`dirChooser`).
+  - Creazione collegamenti su Desktop e Menu Start (cartella "Luma").
+  - Installazione per-utente (senza richiesta di privilegi elevati UAC).
+  - Upgrade UUID stabile per consentire l'aggiornamento automatico e pulito delle versioni successive.
+  - Icona dell'applicazione incorporata ad alta risoluzione.
+- **Versione portabile Windows (`.zip`)**: Archivio zip autonomo contenente eseguibile nativo e runtime JRE 21 integrato, pronto all'uso senza installazione.
+
 ## [1.01] — 2026-11-07
 
 ### Added

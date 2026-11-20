@@ -1,4 +1,4 @@
-name: Build Windows App & Publish Release v1.01
+name: Build Windows App & Publish Release
 
 on:
   push:
@@ -10,9 +10,9 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Tag della Release GitHub (es. v1.01)"
+        description: "Tag della Release GitHub (es. v1.02)"
         required: false
-        default: "v1.01"
+        default: "v1.02"
 
 permissions:
   contents: write
@@ -50,34 +50,34 @@ jobs:
 
           $installer = Get-ChildItem -Path "desktop/build/compose/binaries/main/exe" -Filter "*.exe" | Select-Object -First 1
           if (-not $installer) { throw "Installer EXE non trovato in desktop/build/compose/binaries/main/exe" }
-          Copy-Item $installer.FullName (Join-Path $distDir "Luma-per-Tapo-v1.01-setup.exe") -Force
+          Copy-Item $installer.FullName (Join-Path $distDir "Luma-per-Tapo-v1.02-setup.exe") -Force
 
           $appImage = Get-ChildItem -Path "desktop/build/compose/binaries/main/app" -Directory | Select-Object -First 1
           if (-not $appImage) { throw "App image non trovata in desktop/build/compose/binaries/main/app" }
-          Compress-Archive -Path (Join-Path $appImage.FullName "*") -DestinationPath (Join-Path $distDir "Luma-per-Tapo-v1.01-windows-portable.zip") -Force
+          Compress-Archive -Path (Join-Path $appImage.FullName "*") -DestinationPath (Join-Path $distDir "Luma-per-Tapo-v1.02-windows-portable.zip") -Force
 
           Get-ChildItem $distDir | Select-Object Name, @{ N = "SizeMB"; E = { [math]::Round($_.Length / 1MB, 1) } }
 
       - name: Carica artefatti Windows come Artifact di GitHub Actions
         uses: actions/upload-artifact@v4
         with:
-          name: Luma-per-Tapo-v1.01-Windows
+          name: Luma-per-Tapo-v1.02-Windows
           path: |
-            dist/Luma-per-Tapo-v1.01-setup.exe
-            dist/Luma-per-Tapo-v1.01-windows-portable.zip
+            dist/Luma-per-Tapo-v1.02-setup.exe
+            dist/Luma-per-Tapo-v1.02-windows-portable.zip
           if-no-files-found: error
 
-      - name: Pubblica Windows nelle Release di GitHub (v1.01)
+      - name: Pubblica Windows nelle Release di GitHub
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.release_tag || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || 'v1.01' }}
-          name: "Luma per Tapo v1.01 — Widget Home & 120Hz"
+          tag_name: ${{ github.event.inputs.release_tag || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || 'v1.02' }}
+          name: "Luma per Tapo v1.02 — Porting Nativo Windows & LAN Discovery"
           body_path: CHANGELOG.md
           draft: false
           prerelease: false
           make_latest: "true"
           files: |
-            dist/Luma-per-Tapo-v1.01-setup.exe
-            dist/Luma-per-Tapo-v1.01-windows-portable.zip
+            dist/Luma-per-Tapo-v1.02-setup.exe
+            dist/Luma-per-Tapo-v1.02-windows-portable.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

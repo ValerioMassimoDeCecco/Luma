@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "it.luma.tapo.desktop"
-version = "1.01"
+version = "1.02"
 
 dependencies {
     implementation(compose.desktop.currentOs)
@@ -37,7 +37,20 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Exe)
             packageName = "LumaPerTapo"
-            packageVersion = "1.0.1"
+            packageVersion = "1.0.2"
+            description = "Luma per Tapo: controllo locale delle lampadine smart TP-Link Tapo"
+            vendor = "Luma"
+            copyright = "Copyright © 2026 Luma"
+
+            windows {
+                menu = true
+                shortcut = true
+                dirChooser = true
+                perUserInstall = true
+                menuGroup = "Luma"
+                upgradeUuid = "68c5b3b1-3837-4b5b-8671-8b02c89f5c40"
+                iconFile.set(project.file("src/main/composeResources/files/luma.ico"))
+            }
         }
     }
 }
